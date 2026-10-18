@@ -1,0 +1,32 @@
+{
+  "name": "sisa-frontend",
+  "version": "0.6.0",
+  "description": "SISA Atelier — material-to-making pouch design studio",
+  "private": true,
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "lint": "node ../scripts/checks/check_frontend.mjs",
+    "test:browser": "node test/test_browser.cjs",
+    "test:ai-browser": "node test/test_ai_browser.cjs && node test/test_request_browser.cjs",
+    "test:a11y": "node test/test_upgrade.cjs",
+    "test:3d": "node test/test_3d.cjs",
+    "test:image-model": "node test/test_image_model.cjs",
+    "test:image-reconstruction": "node test/test_image_reconstruction.cjs",
+    "test:custom-colors": "node test/test_custom_colors.cjs",
+    "test:contrast": "node test/test_contrast.cjs",
+    "test:english": "node test/test_english.cjs",
+    "test:all": "python ../scripts/checks/test_all.py",
+    "test:overlays": "node test/test_overlays.cjs",
+    "test:races": "node test/test_ui_races.cjs",
+    "test:projects": "node test/test_projects.cjs"
+  },
+  "devDependencies": {
+    "@fontsource-variable/fraunces": "5.3.0",
+    "@fontsource-variable/plus-jakarta-sans": "5.3.0",
+    "axe-core": "4.14.0",
+    "esbuild": "0.28.2",
+    "playwright": "^1.64.0",
+    "three": "0.186.1",
+    "typescript": "~5.6.3"
+  }
+}

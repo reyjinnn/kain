@@ -1,0 +1,30 @@
+const assert=require('node:assert/strict');
+const {harness}=require('./browser_helpers.cjs');
+const event=(name,data)=>`event: ${name}\ndata: ${JSON.stringify(data)}\n\n`;
+(async()=>harness(8768,async({page,context,base,idle,errors,shot})=>{
+  await context.addInitScript(()=>localStorage.setItem('sisa.ai','true'));await page.reload();await idle();
+  let mode='fallback',release,entered;
+  await page.route('**/api/ai/chat',async route=>{
+    const s=await (await context.request.get(base+'/api/state')).json(),proposal=structuredClone(s.data.request);
+    let response={status:'proposal',proposal,reply:'Aku menangkap kebutuhan kamu.',understood:[],assumptions:[],questions:[],warnings:[],trace:{mode:'live',live_model_used:true}};
+    if(mode==='fallback'){response.status='unavailable';response.trace={mode:'fallback',live_model_used:false};}
+    if(mode==='stock'||mode==='late'){proposal.preferences.front_color='hitam';response.understood=[{field:'front_color',value:'hitam',from:'depan hitam'}];response.warnings=[{code:'COLOR_NOT_IN_STOCK',field:'front_color',text:'Belum ada kain hitam yang tersedia.',actions:[{id:'nearest',label:'Pakai warna terdekat (biru denim)',value:'blue'},{id:'add',label:'Tambah kain hitam',value:'hitam'},{id:'ignore',label:'Abaikan preferensi warna',value:null}]}];}
+    if(mode==='range'){response.status='clarification';response.proposal=null;response.understood=[{field:'W_mm',value:250,from:'25 cm'}];response.warnings=[{code:'OUT_OF_RANGE',field:'W_mm',text:'Lebar 25 cm belum didukung.',actions:[{id:'range',label:'Pakai lebar 16 cm',value:160}]}];}
+    if(mode==='unitless'){proposal.H_mm=150;response.understood=[{field:'W_mm',value:200,from:'20 x 15'},{field:'H_mm',value:150,from:'20 x 15'}];response.warnings=[{code:'OUT_OF_RANGE',field:'W_mm',text:'Lebar yang kamu minta 20 cm. Saat ini lebar bisa 10–16 cm; isianmu belum diubah.',actions:[{id:'range',label:'Pakai lebar 16 cm',value:160}]}];}
+    if(mode==='question'){response.status='clarification';response.proposal=null;response.questions=[{id:'size',text:'Kamu ingin ukuran berapa?',options:['10×8 cm','14×10 cm','16×12 cm']}];response.reply='<img src=x onerror="throw new Error(\'unsafe\')">Untuk kamu';}
+    if(mode==='late'){entered=true;await new Promise(r=>release=r);}
+    await route.fulfill({contentType:'text/event-stream',body:event('step',{text:'Membaca ceritamu'})+event('brief',response)+event('done',{ok:true})}).catch(()=>{});
+  });
+  const submit=async(text='depan hitam')=>{await page.locator('[data-step="1"]').click();await page.locator('#storyInput').fill(text);await page.locator('#sendStory').click();await idle();};
+  const before=(await (await context.request.get(base+'/api/state')).json()).data;
+  await submit();assert.match(await page.locator('#brief').textContent(),/no new proposal was made/);assert.equal(await page.locator('#useBrief').count(),0);assert.deepEqual((await (await context.request.get(base+'/api/state')).json()).data,before);await shot('ai-failure-1440',2);await page.setViewportSize({width:390,height:844});await shot('ai-failure-390',2);await page.setViewportSize({width:1440,height:1000});await page.locator('#manualFallback').click();assert.equal(await page.locator('#step2').isVisible(),true);
+  mode='stock';await submit();assert.match(await page.locator('#brief').textContent(),/Front color: black/);assert.match(await page.locator('#brief').textContent(),/From your story: “depan hitam”/);assert.equal(await page.locator('[data-warning]').count(),3);assert.equal(await page.locator('#useBrief').count(),0);
+  await page.addScriptTag({path:require.resolve('axe-core/axe.min.js')});const audit=async()=>{const v=await page.evaluate(()=>axe.run(document));assert.deepEqual(v.violations.map(v=>v.id),[]);};await audit();await shot('warna-tidak-ada-1440',2);await page.setViewportSize({width:390,height:844});await shot('warna-tidak-ada-390',2);await audit();await page.setViewportSize({width:1440,height:1000});
+  await page.getByRole('button',{name:'Add black fabric',exact:true}).click();assert.match(await page.locator('.toast').last().textContent(),/four fabrics/);await page.locator('[data-step="1"]').click();await page.getByRole('button',{name:'Use nearest color (denim blue)',exact:true}).click();await idle();assert.equal(await page.locator('#frontColor').inputValue(),'blue');
+  await submit();await page.getByRole('button',{name:'Ignore the color preference',exact:true}).click();await idle();assert.equal(await page.locator('#frontColor').inputValue(),'');
+  mode='range';await submit('buat 25 cm');assert.equal(await page.locator('#useBrief').count(),0);await page.getByRole('button',{name:'Use width 16 cm',exact:true}).click();await idle();assert.equal(await page.locator('#widthCm').inputValue(),'16');
+  mode='unitless';await submit('tas dompet 20 x 15');assert.equal(await page.locator('[data-brief-field="W_mm"]').textContent(),'Width: 20 cm');assert.equal(await page.locator('[data-brief-field="H_mm"]').textContent(),'Height: 15 cm');assert.equal(await page.locator('#brief .callout.warning').count(),1);assert.equal(await page.locator('#useBrief').count(),0);assert.equal(await page.locator('#heightCm').inputValue(),'15');await audit();
+  mode='question';await submit('asdf');assert.equal(await page.locator('#messages img').count(),0);await page.getByRole('button',{name:'14×10 cm',exact:true}).click();assert.match(await page.locator('#storyInput').inputValue(),/14×10 cm/);
+  mode='late';await page.locator('#storyInput').fill('depan hitam');await page.locator('#sendStory').click();for(let i=0;i<50&&!entered;i++)await page.waitForTimeout(20);assert.equal(entered,true);await page.locator('[data-step="2"]').click();await page.locator('.manual-fields summary').click();await page.locator('#widthCm').fill('15');release();await idle();assert.equal(await page.locator('#brief').textContent(),'');assert.equal(await page.locator('#widthCm').inputValue(),'15');assert.deepEqual(errors,[]);
+  console.log('PASS SSE failure, stock actions, range choices, questions, escaped prose, whole-page axe, stale chat');
+}))().catch(e=>{console.error(e);process.exitCode=1;});

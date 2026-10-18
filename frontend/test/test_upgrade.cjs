@@ -1,0 +1,28 @@
+const assert=require('node:assert/strict');
+const {harness}=require('./browser_helpers.cjs');
+const fs=require('node:fs');
+(async()=>harness(8771,async({page,context,base,idle,errors,shot})=>{
+  await shot('cerita-1440');
+  assert.equal(await page.locator('[data-step="3"]').isDisabled(),true);
+  await page.addScriptTag({path:require.resolve('axe-core/axe.min.js')});
+  const audit=async()=>{const results=await page.evaluate(()=>axe.run(document,{rules:{'color-contrast':{enabled:true}}}));assert.deepEqual(results.violations.map(v=>({id:v.id,nodes:v.nodes.map(n=>n.target)})),[]);};
+  await audit();await page.setViewportSize({width:390,height:844});await shot('cerita-390');
+  const height=await page.evaluate(()=>document.documentElement.scrollHeight);assert.ok(height<1200,'Cerita mobile '+height);
+  assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));await audit();
+  await page.setViewportSize({width:1440,height:1000});await page.locator('#demoStart').click();
+  await page.locator('#consentDialog').waitFor({state:'visible'});await shot('izin-1440');await audit();await page.locator('#consentNo').click();
+  await page.locator('#step3').waitFor({state:'visible'});await idle();await shot('rancangan-1440');await audit();
+  const s=await (await context.request.get(base+'/api/state')).json();assert.equal(s.active_revision.variant,'whole');assert.equal(s.active_revision.validation_report.checks.length,10);
+  await page.setViewportSize({width:390,height:844});await shot('rancangan-390');await audit();await page.locator('.layout-card summary').click();await shot('layout-390',2);await page.setViewportSize({width:1440,height:1000});await shot('layout-1440',2);await page.locator('.layout-card summary').click();await page.setViewportSize({width:390,height:844});
+  await page.locator('[data-step="2"]').click();await shot('kain-390');await audit();
+  await page.setViewportSize({width:1440,height:1000});await shot('kain-1440');
+  await page.locator('[data-edit="0"]').click();await page.locator('#wizardNext').click();await page.locator('#wizardNext').click();await page.locator('#wizardColor details summary').click();await page.locator('#addDefect').click();await audit();
+  await page.locator('[data-close="fabricDialog"]').click();
+  await page.locator('.manual-fields summary').click();await page.locator('#heightCm').fill('11');assert.equal(await page.locator('[data-step="4"]').isDisabled(),true);
+  await page.locator('#confirmFabric').click();await page.locator('#step3').waitFor({state:'visible'});await idle();
+  assert.equal((await (await context.request.get(base+'/api/state')).json()).data.request.H_mm,110);
+  await page.locator('#toGuide').click();await page.locator('#pdfPreview .pdf-page-image').waitFor();await idle();await page.waitForFunction(()=>document.querySelector('.pdf-page-image').naturalWidth>100);await shot('petunjuk-1440');await audit();
+  await page.setViewportSize({width:390,height:844});await shot('petunjuk-390');await audit();
+  await page.locator('#newStart').click();await page.locator('[data-close="resetDialog"]').click();assert.equal(await page.locator('#step4').isVisible(),true);
+  assert.deepEqual(errors,[]);console.log('PASS four steps, consent, material wizard, revision invalidation, PDF preview, desktop/mobile axe');
+}))().catch(e=>{console.error(e);process.exitCode=1;});

@@ -1,0 +1,748 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#214f3e" />
+    <meta name="description" content="SISA Atelier — a design studio for pouches made from fabric scraps. Turn your ideas and materials into a 3D model and a printable pattern guide." />
+    <title>SISA · Fabric scraps, new stories</title>
+    <link
+      rel="preload"
+      href="/static/assets/fonts/jakarta.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link rel="stylesheet" href="/static/styles/tokens.css" />
+    <link rel="stylesheet" href="/static/styles/base.css" />
+    <link rel="stylesheet" href="/static/styles/components.css" />
+    <link rel="stylesheet" href="/static/styles/pages.css" />
+    <link rel="stylesheet" href="/static/styles/projects.css" />
+    <link rel="stylesheet" href="/static/styles/atelier.css" />
+    <script type="module" src="/static/src/app.js"></script>
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to workspace</a>
+    <svg
+      class="icon-sprite"
+      aria-hidden="true"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <symbol id="spark" viewBox="0 0 24 24">
+        <path d="m12 3 2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5Z" />
+      </symbol>
+      <symbol id="arrow" viewBox="0 0 24 24">
+        <path d="M4 12h15m-6-6 6 6-6 6" />
+      </symbol>
+      <symbol id="check" viewBox="0 0 24 24">
+        <path d="m5 12 4 4L19 6" />
+      </symbol>
+      <symbol id="help" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="9" />
+        <path d="M9 9a3 3 0 1 1 4 3c-1 .5-1 1-1 2m0 3h.01" />
+      </symbol>
+      <symbol id="close" viewBox="0 0 24 24">
+        <path d="M18 6 6 18M6 6l12 12" />
+      </symbol>
+      <symbol id="notice" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="9" />
+        <path d="M12 8v4m0 4h.01" />
+      </symbol>
+      <symbol id="settings" viewBox="0 0 24 24">
+        <path d="M4 6h16M4 12h16M4 18h16" />
+        <circle cx="9" cy="6" r="2" />
+        <circle cx="15" cy="12" r="2" />
+        <circle cx="8" cy="18" r="2" />
+      </symbol>
+    </svg>
+    <header class="topbar">
+      <a class="brand" href="#"
+        ><span class="brand-mark" aria-hidden="true">s.</span
+        ><span>SISA<small>PATTERN & MATERIAL ATELIER</small></span></a
+      >
+      <div class="header-actions">
+        <button class="icon-button" id="helpOpen" aria-label="Help" aria-haspopup="dialog" aria-controls="helpDialog" aria-expanded="false">
+          <svg><use href="#help" /></svg></button
+        ><button class="icon-button" id="settingsOpen" aria-label="Settings">
+          <svg><use href="#settings" /></svg>
+        </button>
+      </div>
+    </header>
+    <nav class="project-bar" aria-label="Your project">
+      <span id="saveStatus" role="status" aria-live="polite">Preparing your details…</span>
+      <div class="actions"><button id="projectSave" class="text-button" disabled>Save</button><button id="projectOpen" class="text-button" disabled>Open</button></div>
+    </nav>
+    <div class="shell">
+      <nav class="stepper" aria-label="Pouch design steps">
+        <button data-step="1" aria-current="step">
+          <b>1</b><span>Story</span></button
+        ><i></i
+        ><button data-step="2" disabled title="Describe what you need first">
+          <b>2</b><span>Fabric</span></button
+        ><i></i
+        ><button
+          data-step="3"
+          disabled
+          title="Confirm your requirements and check the fabric first"
+        >
+          <b>3</b><span>Design</span></button
+        ><i></i
+        ><button
+          data-step="4"
+          disabled
+          title="Create a checked design first"
+        >
+          <b>4</b><span>Guide</span>
+        </button>
+      </nav>
+      <main id="main">
+      <div id="sessionConflict" class="callout warning" role="alert" hidden>
+        <h1 id="conflictTitle">This project changed in another tab.</h1><p id="conflictMessage">Choose which details you want to keep before continuing.</p>
+        <div class="actions"><button id="loadOtherTab">Load the latest changes</button><button id="keepThisTab">Keep the details in this tab</button></div>
+        <p class="caption" id="conflictHint">The second option replaces the details in the other tab. The design will need to be built again.</p>
+      </div>
+
+        <section id="step1" class="page" aria-labelledby="storyTitle">
+          <aside id="microTour" class="micro-tour" aria-label="First-time tour" hidden>
+            <span class="pill" id="tourCount">1 of 3</span>
+            <p id="tourText"></p>
+            <button id="tourNext" class="text-button">Continue tour</button><button id="tourSkip" class="text-button">Skip</button>
+          </aside>
+          <div class="hero">
+            <div>
+              <span class="eyebrow">MATERIAL STUDIO · EDITION 02</span>
+              <h1 id="storyTitle">Fabric scraps.<br /><em>Meaningful shapes.</em></h1>
+              <p>Start with the fabric you have. Design a pouch, explore its shape in 3D, then prepare a pattern and guide to review before sewing.</p>
+              <div class="actions">
+                <button id="startStory" class="primary">
+                  Start designing <svg><use href="#arrow" /></svg></button
+                ><button id="demoStart" class="secondary">
+                  Explore an example
+                </button>
+              </div>
+            </div>
+            <div class="hero-art">
+              <svg viewBox="0 0 440 300" role="img" aria-label="Fabric scraps, pattern lines, and a finished pouch design">
+                <defs>
+                  <pattern id="weave" width="8" height="8" patternUnits="userSpaceOnUse">
+                    <path d="M0 0h8M0 0v8" stroke="#fff7e9" opacity=".12" />
+                  </pattern>
+                  <pattern id="draftGrid" width="22" height="22" patternUnits="userSpaceOnUse">
+                    <path d="M22 0H0V22" fill="none" stroke="#f3e9d9" stroke-opacity=".14" stroke-width=".7" />
+                  </pattern>
+                  <linearGradient id="pouchShade" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0" stop-color="#396c56" /><stop offset="1" stop-color="#183b2e" />
+                  </linearGradient>
+                </defs>
+                <rect x="0" y="0" width="440" height="300" fill="url(#draftGrid)" />
+                <g transform="translate(35 56) rotate(-8 48 42)">
+                  <path d="M7 10 86 0 95 65 15 77Z" fill="#d88a55" />
+                  <path d="M7 10 86 0 95 65 15 77Z" fill="url(#weave)" />
+                  <path d="M13 16 80 8 87 59 21 68Z" fill="none" stroke="#fff0de" stroke-width="1.3" stroke-dasharray="3 4" />
+                </g>
+                <g transform="translate(79 136) rotate(8 40 35)">
+                  <path d="M6 4 78 10 70 75 0 67Z" fill="#d8c6a4" />
+                  <path d="M11 10 72 15 65 68 7 62Z" fill="none" stroke="#657a6d" stroke-width="1.2" stroke-dasharray="3 4" />
+                </g>
+                <g transform="translate(12 193) rotate(-4 30 20)">
+                  <path d="M0 7 55 0 61 37 6 44Z" fill="#637c70" />
+                  <path d="M5 12 50 6 55 32 11 38Z" fill="none" stroke="#e9efe4" stroke-width="1.1" stroke-dasharray="3 3" />
+                </g>
+                <path d="M176 124h41m-11-11 11 11-11 11" stroke="#dda16f" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M226 219 365 206 390 232 250 248Z" fill="#0d2b21" opacity=".42" />
+                <path d="M236 73 367 62 384 222 254 239Z" fill="url(#pouchShade)" />
+                <path d="M236 73 367 62 384 222 254 239Z" fill="url(#weave)" />
+                <path d="M236 73 367 62 360 83 245 94Z" fill="#122f25" />
+                <path d="M245 94 360 83 374 211 261 225Z" fill="none" stroke="#edcfaa" stroke-width="1.2" stroke-dasharray="3 4" />
+                <path d="M242 73 367 62" stroke="#e1a26b" stroke-width="2" />
+                <path d="M252 51 367 41" stroke="#d8c6a4" stroke-width="1" stroke-dasharray="2 5" opacity=".8" />
+                <path d="M252 45v12M367 35v12" stroke="#d8c6a4" stroke-width="1.4" opacity=".9" />
+                <g fill="#f7f1e5" font-family="Jakarta,Arial,sans-serif" font-size="10" letter-spacing="1.4">
+                  <text x="25" y="35">01 / MATERIAL</text>
+                  <text x="252" y="267">02 / OBJECT</text>
+                </g>
+                <g transform="translate(386 36)" stroke="#dfa16e" fill="none" stroke-width="1.4">
+                  <circle r="13"/><path d="M-5 0h10M0-5v10"/>
+                </g>
+              </svg>
+              <div class="hero-art-labels" aria-hidden="true"><span>Your scrap fabric</span><span>Your new pouch</span></div>
+            </div>
+          </div>
+          <div class="story-grid">
+            <div class="ai-card card" id="storyCard">
+              <div class="card-title">
+                <svg class="icon"><use href="#spark" /></svg>
+                <h2>Chat with AI</h2>
+                <span class="pill" id="aiStatus">Checking service…</span>
+              </div>
+              <div class="chips examples" aria-label="Example stories">
+                <button data-example="Cosmetics pouch 16×12 cm, blue front">
+                  Cosmetics 16×12 cm</button
+                ><button
+                  data-example="Card pouch 10×8 cm, cream, no joined panels"
+                >
+                  Cards 10×8 cm</button
+                ><button
+                  data-example="Charger pouch 14×10 cm, any color, prioritize saving fabric"
+                >
+                  Charger 14×10 cm
+                </button>
+              </div>
+              <div
+                id="messages"
+                class="messages"
+                tabindex="0"
+                role="log"
+                aria-label="Design chat"
+                aria-live="polite"
+              >
+                <div class="bubble assistant welcome">
+                  Describe the size and colors you want. Use the sample fabric
+                  or add your own.
+                </div>
+              </div>
+              <div id="brief" aria-live="polite"></div>
+              <form id="composer" class="composer">
+                <label for="storyInput"
+                  >Your story or the changes you want</label
+                >
+                <div>
+                  <textarea
+                    id="storyInput"
+                    rows="2"
+                    maxlength="2000"
+                    placeholder="For example: 14×10 cm pouch, black front…"
+                  ></textarea
+                  ><button
+                    id="sendStory"
+                    class="primary"
+                    type="submit"
+                    aria-label="Send your story"
+                  >
+                    <svg><use href="#arrow" /></svg><span>Send</span>
+                  </button>
+                </div>
+              </form>
+              <button id="manualStart" class="text-button">
+                Enter measurements manually
+              </button>
+            </div>
+            <aside class="scope card">
+              <span class="eyebrow">STUDIO SCOPE</span>
+              <h2>One basic shape.<br />Room for exploration.</h2>
+              <p id="scopeText">Loading size limits…</p>
+              <details>
+                <summary>Why are there limits?</summary>
+                <p>
+                  SISA currently supports one pouch shape. The shape and pattern
+                  are checked automatically; a sewing test is still needed.
+                </p>
+              </details>
+            </aside>
+          </div>
+        </section>
+        <section id="step2" class="page" hidden aria-labelledby="fabricTitle">
+          <div class="page-heading">
+            <div>
+              <span class="eyebrow">MATERIAL FOR YOUR STORY</span>
+              <h1 id="fabricTitle">Get to know your fabric.</h1>
+              <p>
+                The sample fabric has been checked for practice. Measure and check
+                your own fabric before creating a design.
+              </p>
+            </div>
+            <button id="addFabric" class="secondary">Add fabric</button>
+          </div>
+          <div id="fabricCards" class="fabric-grid"></div>
+          <details class="card manual-fields">
+            <summary>Pouch measurements and options</summary>
+            <div class="fields">
+              <div>
+                <label for="widthCm">Finished width (cm)</label
+                ><span class="number-step"
+                  ><button
+                    type="button"
+                    data-number="widthCm"
+                    data-delta="-1"
+                    aria-label="Decrease width"
+                  >
+                    −</button
+                  ><input id="widthCm" type="number" step="0.1" /><button
+                    type="button"
+                    data-number="widthCm"
+                    data-delta="1"
+                    aria-label="Increase width"
+                  >
+                    +
+                  </button></span
+                >
+              </div>
+              <div>
+                <label for="heightCm">Finished height (cm)</label
+                ><span class="number-step"
+                  ><button
+                    type="button"
+                    data-number="heightCm"
+                    data-delta="-1"
+                    aria-label="Decrease height"
+                  >
+                    −</button
+                  ><input id="heightCm" type="number" step="0.1" /><button
+                    type="button"
+                    data-number="heightCm"
+                    data-delta="1"
+                    aria-label="Increase height"
+                  >
+                    +
+                  </button></span
+                >
+              </div>
+              <label>Front color<input id="frontColor" maxlength="40" placeholder="Any: sage, dusty pink, or your preferred color" /></label
+              ><label
+                >Priority<select id="priority">
+                  <option value="true">Neater look, fewer seams</option>
+                  <option value="false">Save more fabric</option>
+                </select></label
+              >
+            </div>
+            <div class="option-cards">
+              <label class="option-card" for="allowSplit">
+                <svg viewBox="0 0 90 60" aria-hidden="true"><rect x="10" y="7" width="70" height="46" rx="3" fill="#35508F"/><path d="M45 7v46" stroke="#FAF6EF" stroke-dasharray="3 3" stroke-width="2"/></svg>
+                <span class="check"><input id="allowSplit" type="checkbox" />Allow a center seam on the front</span>
+                <small>If the fabric is not wide enough, the front is made from two pieces.</small>
+              </label>
+              <label class="option-card" for="allowMixed">
+                <svg viewBox="0 0 90 60" aria-hidden="true"><path d="M10 7h35v46H10z" fill="#35508F"/><path d="M45 7h35v46H45z" fill="#D9C7A5"/><path d="M45 7v46" stroke="#1F2F5C" stroke-dasharray="3 3" stroke-width="2"/></svg>
+                <span class="check"><input id="allowMixed" type="checkbox" />Allow mixing multiple colors</span>
+                <small>Front pieces may use different fabric colors.</small>
+              </label>
+            </div><svg
+              id="sizeSketch"
+              viewBox="0 0 260 180"
+              role="img"
+              aria-label="Size sketch of your chosen pouch"
+            ></svg>
+            <p class="field-error" id="sizeError" role="status"></p>
+          </details>
+          <div class="action-bar">
+            <p id="fabricReview">Check your fabric size and grainline.</p>
+            <button id="confirmFabric" class="primary">
+              Measurements are correct <svg><use href="#arrow" /></svg>
+            </button>
+          </div>
+        </section>
+        <section id="step3" class="page" hidden aria-labelledby="designTitle">
+          <div class="page-heading">
+            <div>
+              <span class="eyebrow">FROM FABRIC TO DESIGN</span>
+              <h1 id="designTitle">Your pouch.</h1>
+              <p id="designDescription">
+                The design appears once your requirements and fabric are checked.
+              </p>
+            </div>
+            <span id="designSource" class="pill"></span>
+          </div>
+          <div id="metrics" class="metrics"></div>
+          <div id="colorNotice" class="callout warning" hidden></div>
+          <div id="splitDecision" class="callout warning" hidden></div>
+          <div class="visual-tabs" role="tablist" aria-label="View the design">
+            <button id="visualImageTab" role="tab" aria-controls="imageCard" aria-selected="false">AI illustration</button>
+            <button id="visualModelTab" role="tab" aria-controls="modelCard" aria-selected="true">3D model</button>
+          </div>
+          <div class="visual-grid" id="visualCards" data-visual="model">
+            <article class="card" id="imageCard">
+              <div class="card-title">
+                <h2>AI illustration</h2>
+                <span class="pill">Photo style</span>
+              </div>
+              <div id="imagePreview" class="image-preview">
+                <div class="empty">
+                  <svg class="icon large"><use href="#spark" /></svg>
+                  <p>The image is generated from the checked design.</p>
+                </div>
+              </div>
+              <p id="imageStatus" role="status"></p>
+              <div class="actions">
+                <button id="regenerateImage" class="secondary">
+                  Generate image</button
+                ><button id="cancelImage" class="text-button" hidden>
+                  Cancel image
+                </button>
+              </div>
+            </article>
+            <article class="card" id="modelCard">
+              <div class="card-title">
+                <h2 id="modelTitle">SISA pattern model</h2>
+                <span class="pill">Rotatable</span>
+              </div>
+              <div
+                id="pouchScene"
+                class="pouch-scene"
+                tabindex="0"
+                role="img"
+                aria-label="Illustration of the pouch shape"
+              ></div>
+              <div class="chips view-controls">
+                <button data-view="front">Front</button
+                ><button data-view="threeQuarter">¾</button
+                ><button data-view="back">Back</button
+                ><button data-view="side">Side</button
+                ><button data-view="top">Top</button
+                ><button data-view="reset">Reset</button>
+              </div>
+              <div class="actions model-tools">
+                <button
+                  id="dimensionsToggle"
+                  class="text-button"
+                  aria-pressed="false"
+                >
+                  Show dimensions</button
+                ><button
+                  id="seamToggle"
+                  class="text-button"
+                  aria-pressed="true"
+                  hidden
+                >
+                  Hide seam labels</button
+                ><button
+                  id="rotationLock"
+                  class="text-button"
+                  aria-pressed="false"
+                >
+                  Lock rotation
+                </button>
+              </div>
+              <p class="caption" id="modelStatus" aria-live="polite">
+                Shape illustration. Real fabric may drape and bulge differently;
+                this does not guarantee your items will fit.
+              </p>
+            </article>
+          </div>
+          <div id="swatches" class="swatch-row"></div>
+          <details class="visual-note">
+            <summary>Why can the image and the model differ slightly?</summary>
+            <p>
+              Once the AI illustration is available, SISA reads the visible shape
+              and uses the image texture to build a local 3D reconstruction.
+              Depth and unseen back parts are estimated.
+              The pattern model is available before the image is generated. Sewing
+              measurements follow the checked pattern, not the measurements from the image.
+            </p>
+          </details>
+          <details class="card layout-card">
+            <summary>Which fabric are the pieces cut from?</summary>
+            <div class="card-title">
+              <button id="layoutWhy" class="text-button">
+                Why this layout?
+              </button>
+            </div>
+            <p id="fabricChoice" hidden></p>
+            <div id="layoutDiagram"></div>
+            <p class="caption">
+              All fabrics use the same scale. Outer lines = cut pieces; dashed
+              inner lines = finished size. Images are reduced; use the PDF for the
+              1:1 pattern.
+            </p>
+            <div class="legend">
+              <span>Solid line: cut piece</span><span>Shading: stains/holes</span
+              ><span>Dashed line: unused area</span
+              ><span>Cross mark: fabric unavailable</span>
+            </div>
+          </details>
+          <div class="detail-grid">
+            <details class="card">
+              <summary>What changed?</summary>
+              <div id="designDiff"></div>
+            </details>
+            <details class="card">
+              <summary id="checkCount">Automatic checks</summary>
+              <ul id="checks"></ul>
+            </details>
+          </div>
+          <details class="card explanation-card">
+            <summary>Design explanation</summary><div id="planExplanation"></div>
+          </details>
+          <div class="chips revisions">
+            <button data-revision="Make it 2 cm taller">
+              2 cm taller</button
+            ><button data-revision="Change front color">Change front color</button
+            ><button data-revision="No joined panels">
+              No seams</button
+            ><button id="reviseDesign">Type a change</button>
+          </div>
+          <div class="action-bar">
+            <p id="designNext">Review the shape and layout before printing.</p>
+            <button id="toGuide" class="primary">
+              Download guide (PDF) <svg><use href="#arrow" /></svg>
+            </button>
+          </div>
+          <details id="scenarios" hidden>
+            <summary>Try fabric change scenarios</summary>
+            <button id="removeExampleLarge" class="secondary">
+              Large blue fabric unavailable</button
+            ><button id="removeExampleBeige" class="secondary">
+              Try insufficient fabric
+            </button>
+          </details>
+        </section>
+        <section id="step4" class="page" hidden aria-labelledby="guideTitle">
+          <div class="page-heading">
+            <div>
+              <span class="eyebrow">FROM DESIGN TO YOUR HANDS</span>
+              <h1 id="guideTitle">A guide you can follow.</h1>
+              <p>Check the printout and assemble it from paper first.</p>
+            </div>
+          </div>
+          <div class="guide-grid">
+            <article class="card pdf-card">
+              <div id="pdfPreview" class="pdf-preview">
+                <p>The preview appears once the design is ready.</p>
+              </div>
+              <div class="actions">
+                <button id="downloadGuide" class="primary">
+                  Download guide (PDF)</button
+                ><button id="printGuide" class="secondary">Print</button>
+              </div>
+              <button id="downloadTechnical" class="text-button">
+                Technical attachment for sewers/developers
+              </button>
+            </article>
+            <aside class="card">
+              <h2>Before printing</h2>
+              <ol class="print-tips">
+                <li>
+                  <strong>Print at original size, 100%.</strong>
+                  <p>Turn off any fit-to-page option.</p>
+                </li>
+                <li>
+                  <strong>Measure the 50 mm box.</strong>
+                  <p id="printTolerance">Check both sides.</p>
+                </li>
+                <li>
+                  <strong>Assemble the paper version first.</strong>
+                  <p>
+                    This guide is still a test version. Corner finishing and seams
+                    need review before cutting fabric.
+                  </p>
+                </li>
+              </ol>
+              <details id="guideSteps"></details>
+            </aside>
+          </div>
+        </section>
+      </main>
+      <footer>
+        <span>SISA ATELIER <i>·</i> from scraps to design</span
+        ><button id="newStart" class="text-button">Start over</button>
+        <details>
+          <summary>Technical details</summary>
+          <pre id="technicalDetails"></pre>
+        </details>
+      </footer>
+    </div>
+    <div id="toasts" class="toasts" aria-live="polite" role="status"></div>
+    <div id="progress" class="progress" role="status" aria-live="polite" hidden>
+      <span class="stitch"></span>
+      <p id="progressText"></p>
+      <button id="cancelWork" class="secondary">Cancel</button>
+    </div>
+    <dialog id="consentDialog" aria-labelledby="consentTitle">
+      <h2 id="consentTitle">Allow AI to help you?</h2>
+      <p>
+        AI reads your text and fabric measurements to create a design. Photos are
+        not sent.
+      </p>
+      <div class="actions">
+        <button id="consentYes" class="primary">Allow, continue</button
+        ><button id="consentNo" class="secondary">Without AI</button>
+      </div>
+    </dialog>
+    <dialog id="settingsDialog" aria-labelledby="settingsTitle" data-backdrop-close="true">
+      <h2 id="settingsTitle">Settings</h2>
+      <label class="check"
+        ><input id="aiEnabled" type="checkbox" />Use AI</label
+      >
+      <label class="check"><input id="activityEnabled" type="checkbox" />Help improve SISA with anonymous activity notes</label>
+      <p class="caption">Only the timing of start, send, finish, download, and problem events is recorded. Stories, fabric names, and measurements are not recorded.</p>
+      <p class="caption">You can turn this off at any time. Work is stored for 30 days after it was last opened.</p>
+      <details>
+        <summary>What is sent to AI?</summary>
+        <p>Your story, measurements, colors, shape, and fabric defect markers.</p>
+      </details>
+      <div class="actions">
+        <button class="secondary" id="refreshAiConfig">
+          Check AI service</button
+        ><button class="secondary" data-close="settingsDialog">Done</button>
+      </div>
+    </dialog>
+    <dialog id="saveProjectDialog" aria-labelledby="saveProjectTitle">
+      <h2 id="saveProjectTitle">Save your project</h2>
+      <p>Your details are saved automatically. Give it a name to open it again later.</p>
+      <p class="caption">The same name updates the previous save.</p>
+      <form id="saveProjectForm">
+        <label for="projectName">Project name</label><input id="projectName" required maxlength="60" autocomplete="off" placeholder="Pouch from blue fabric" />
+        <p id="projectSaveError" class="field-error" role="status" aria-live="polite"></p>
+        <div class="actions"><button type="submit" class="primary">Save project</button><button type="button" class="secondary" data-close="saveProjectDialog">Back</button></div>
+      </form>
+    </dialog>
+    <dialog id="openProjectDialog" aria-labelledby="openProjectTitle">
+      <h2 id="openProjectTitle">Open your project</h2>
+      <p>Projects are saved in this browser. Opening one replaces the details currently shown.</p>
+      <div id="projectList" class="project-list" aria-live="polite"></div>
+      <button class="secondary" data-close="openProjectDialog">Back</button>
+    </dialog>
+    <dialog id="deleteProjectDialog" aria-labelledby="deleteProjectTitle">
+      <h2 id="deleteProjectTitle">Delete this save?</h2>
+      <p id="deleteProjectName"></p><p>The open details stay as they are. The save with this name will be deleted.</p>
+      <div class="actions"><button id="deleteProjectYes" class="primary">Delete save</button><button class="secondary" data-close="deleteProjectDialog" autofocus>Back</button></div>
+    </dialog>
+    <dialog id="helpDialog" class="drawer" aria-labelledby="helpTitle" data-backdrop-close="true">
+      <div class="drawer-header">
+        <span class="eyebrow">WORKSPACE GUIDE</span>
+        <h2 id="helpTitle">From scraps to a story.</h2>
+        <p>Small steps to start designing from the fabric you have.</p>
+      </div>
+      <div class="drawer-body" tabindex="0" role="region" aria-label="Design steps and terms">
+        <h3>Start with one story</h3>
+        <ol class="help-steps">
+          <li><b>Describe what you need</b><p>Type the finished measurements and colors, or start without AI by entering measurements manually.</p></li>
+          <li><b>Check the fabric you have</b><p>Measure the fabric, mark defects, and confirm before creating a design.</p></li>
+          <li><b>Review the pattern and layout</b><p>The 3D model helps you see the shape. An AI image is not proof that the pattern can be sewn.</p></li>
+          <li><b>Print, then measure again</b><p>Choose 100% scale, not fit-to-page. Make sure the calibration box measures 5 × 5 cm.</p></li>
+        </ol>
+        <section class="help-section" aria-labelledby="helpTerms">
+          <h3 id="helpTerms">Learn the terms</h3>
+          <dl>
+            <dt>Seam allowance</dt>
+            <dd>The extra fabric between the stitch line and the cut edge.</dd>
+            <dt>Grainline</dt>
+            <dd>The thread direction on the fabric that must be kept when cutting.</dd>
+            <dt>Notch</dt>
+            <dd>A mark for matching the position of two pieces.</dd>
+          </dl>
+        </section>
+        <section class="help-section" aria-labelledby="helpPrivacy">
+          <h3 id="helpPrivacy">Always under your control</h3>
+          <p>Details are saved automatically for this browser. Name your work via Save so you can open it again easily. You can use SISA without AI; photos are not sent to AI.</p>
+        </section>
+      </div>
+      <div class="drawer-footer"><button class="primary" data-close="helpDialog">Back to designing</button><small>You can also close with the Escape key.</small></div>
+    </dialog>
+    <dialog id="fabricDialog" aria-labelledby="fabricDialogTitle">
+      <h2 id="fabricDialogTitle">Add your fabric</h2>
+      <p id="wizardStage">1 · Choose shape</p>
+      <form id="fabricForm" novalidate>
+        <div id="wizardShape">
+          <div class="chips">
+            <button type="button" data-shape="rectangle" aria-pressed="true">
+              Rectangle</button
+            ><button type="button" data-shape="L" aria-pressed="false">
+              L shape</button
+            ><button type="button" id="copyLastFabric">
+              Copy last fabric
+            </button>
+          </div>
+          <p>SISA supports non-stretch woven fabric.</p>
+        </div>
+        <div id="wizardSize" hidden>
+          <div class="fields">
+            <label
+              >Fabric width (cm)<input
+                id="fabricWidth"
+                type="number"
+                min="1"
+                max="1000"
+                step="0.1"
+                value="19" /></label
+            ><label
+              >Fabric height (cm)<input
+                id="fabricHeight"
+                type="number"
+                min="1"
+                max="1000"
+                step="0.1"
+                value="15"
+            /></label>
+          </div>
+          <div id="notchFields" class="fields" hidden>
+            <label
+              >Width of the empty top-right area (cm)<input
+                id="notchWidth"
+                type="number"
+                value="2"
+                step="0.1" /></label
+            ><label
+              >Height of the empty top-right area (cm)<input
+                id="notchHeight"
+                type="number"
+                value="5"
+                step="0.1"
+            /></label>
+          </div>
+          <svg
+            id="fabricSketch"
+            viewBox="0 0 300 210"
+            role="img"
+            aria-label="Fabric size diagram"
+          ></svg>
+        </div>
+        <div id="wizardColor" hidden>
+          <label
+            >Fabric name<input
+              id="fabricName"
+              maxlength="40"
+              placeholder="For example: denim from old jeans" /></label
+          ><label
+            >Color<input id="fabricColor" type="color" value="#35508f"
+          /></label>
+          <label>Color name (any color works)<input id="fabricColorName" maxlength="40" placeholder="For example: sage, mocha, pastel blue" /></label>
+          <p class="caption">The palette below is just an example. You can type your own color name and pick the closest sample color to your fabric.</p>
+          <div id="colorPicker" class="color-picker"></div>
+          <label class="check"
+            ><input id="fabricDirectional" type="checkbox" />This fabric has a pattern
+            or direction: do not rotate</label
+          >
+          <details>
+            <summary>Any stains or holes?</summary>
+            <p>
+              Add a mark on the diagram, then drag it to the position of the defect.
+              Sizes in cm.
+            </p>
+            <button type="button" id="addDefect" class="secondary">
+              Add defect marker
+            </button>
+            <div id="defectControls"></div>
+            <svg
+              id="defectSketch"
+              viewBox="0 0 300 210"
+              role="group"
+              aria-label="Defect position on the fabric"
+            ></svg>
+          </details>
+        </div>
+        <p id="fabricError" class="field-error" role="alert"></p>
+        <div class="actions">
+          <button type="button" id="wizardBack" class="secondary">
+            Back</button
+          ><button type="button" id="wizardNext" class="primary">Next</button
+          ><button type="submit" id="wizardSave" class="primary" hidden>
+            Save fabric</button
+          ><button type="button" class="text-button" data-close="fabricDialog">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </dialog>
+    <dialog id="resetDialog" aria-labelledby="resetTitle">
+      <h2 id="resetTitle">Start from the sample fabric again?</h2>
+      <p>
+        The current design will be replaced. The measurements and fabric you entered
+        are kept temporarily so you can undo this.
+      </p>
+      <div class="actions">
+        <button id="resetYes" class="primary">Start over</button
+        ><button class="secondary" data-close="resetDialog" autofocus>Back</button>
+      </div>
+    </dialog>
+  </body>
+</html>
